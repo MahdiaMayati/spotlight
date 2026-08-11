@@ -23,7 +23,14 @@ exports.getMessages = async (req, res) => {
 
     const [messages, total] = await Promise.all([
       prisma.message.findMany({
-        include: { service: true },
+        include: {
+          service: {
+            select: {
+              id: true,
+              name: true 
+            }
+          }
+         },
         skip,
         take: limit,
       }),
