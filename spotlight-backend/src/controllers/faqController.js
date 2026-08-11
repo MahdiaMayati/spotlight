@@ -1,0 +1,44 @@
+const prisma = require('../config/db');
+
+exports.getFaqs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [faqs, total] = await Promise.all([
+      prisma.faq.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: 'asc' },
+        skip,
+        take: limit,
+      }),
+      prisma.faq.count({ where: { isActive: true } })
+    ]);
+
+    res.status(200).json({
+      status: 200,
+      pagination: {
+        totalItems: total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        limit
+      },
+      data: faqs
+    });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+exports.createFaq = async (req, res) => {
+  try {
+    const { question, answer, sortOrder } = req.body;
+    const faq = await prisma.faq.create({
+      data: { question, answer, sortOrder: sortOrder || 0 }
+    });
+    res.status(201).json({ status: 201, data: faq });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
