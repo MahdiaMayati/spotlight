@@ -61,3 +61,18 @@ exports.deletePartner = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+exports.updatePartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, logoUrl, linkUrl } = req.body;
+
+    const updatedPartner = await prisma.partner.update({
+      where: { id: parseInt(id) },
+      data: { name, logoUrl, linkUrl }
+    });
+
+    res.status(200).json({ status: 200, data: updatedPartner });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};

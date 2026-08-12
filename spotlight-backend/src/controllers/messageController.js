@@ -46,3 +46,36 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+
+exports.deleteMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // التأكد من وجود الرسالة قبل الحذف
+    const existingMessage = await prisma.message.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingMessage) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Message not found'
+      });
+    }
+
+    // تنفيذ الحذف في قاعدة البيانات
+    await prisma.message.delete({
+      where: { id: parseInt(id) }
+    });
+
+    res.status(200).json({
+      status: 200,
+      message: 'Message deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      error: error.message
+    });
+  }
+};
