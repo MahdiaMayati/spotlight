@@ -40,6 +40,9 @@ const homeVideoRoutes = require('./homeVideoRoutes');
 const socialLinkRoutes = require('./socialLinkRoutes');
 const settingRoutes = require('./settingRoutes');
 const verifyAdmin = require('../middlewares/authMiddleware');
+const serviceController = require('../controllers/serviceController');
+const adminController = require('../controllers/adminController');
+
 
 
 // ربط كل Route مع المسار الخاص به
@@ -51,16 +54,8 @@ router.use('/faqs', faqRoutes);
 router.use('/home-videos', homeVideoRoutes);
 router.use('/social-links', socialLinkRoutes);
 router.use('/settings', settingRoutes);
-
-
-// 1. مسارات مفتوحة للجميع (Public) - بدون Middleware
-router.get('/', serviceController.getAllServices);
-router.get('/:id', serviceController.getServiceById);
-
-// 2. مسارات مخصصة للأدمن فقط (Protected) 
-router.post('/', verifyAdmin, serviceController.createService);
-router.put('/:id', verifyAdmin, serviceController.updateService);
-router.delete('/:id', verifyAdmin, serviceController.deleteService);
+// مسار تسجيل دخول الأدمن
+router.post('/admin/login', adminController.login);
 
 module.exports = router;
 
