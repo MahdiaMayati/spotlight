@@ -1,4 +1,4 @@
-// Test Controller
+
 const getUsers = (req, res) => {
   res.json({
     success: true,

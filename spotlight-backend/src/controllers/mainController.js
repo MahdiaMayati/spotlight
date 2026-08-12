@@ -1,6 +1,5 @@
 const prisma = require('../config/db');
 
-// --- Services ---
 exports.getServices = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -63,7 +62,6 @@ exports.createService = async (req, res) => {
   }
 };
 
-// --- Projects ---
 exports.getProjects = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

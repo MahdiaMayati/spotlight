@@ -30,7 +30,6 @@
 const express = require('express');
 const router = express.Router();
 
-// استدعاء ملفات المسارات المنفصلة
 const serviceRoutes = require('./serviceRoutes');
 const projectRoutes = require('./projectRoutes');
 const messageRoutes = require('./messageRoutes');
@@ -39,9 +38,7 @@ const faqRoutes = require('./faqRoutes');
 const homeVideoRoutes = require('./homeVideoRoutes');
 const socialLinkRoutes = require('./socialLinkRoutes');
 const settingRoutes = require('./settingRoutes');
-// const uploadRoutes = require('./uploadRoutes'); 
 
-// ربط كل Route مع المسار الخاص به
 router.use('/services', serviceRoutes);
 router.use('/projects', projectRoutes);
 router.use('/messages', messageRoutes);
@@ -51,5 +48,4 @@ router.use('/home-videos', homeVideoRoutes);
 router.use('/social-links', socialLinkRoutes);
 router.use('/settings', settingRoutes);
 
-// app.use('/api/upload', uploadRoutes);
 module.exports = router;
