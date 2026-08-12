@@ -12,10 +12,14 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'spotlight_uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'mp4', 'mov']
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'mp4', 'mov'],
+    resource_type: 'auto' 
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 100 * 1024 * 1024 } 
+});
 
 module.exports = upload;

@@ -42,19 +42,58 @@ exports.getProjectById = async (req, res) => {
 
 exports.createProject = async (req, res) => {
   try {
-    const { serviceId, title, slug, mainImage, description, longDescription, locationText, area, buildStart, buildFinish, features, media } = req.body;
+    const { title, slug, mainImage, description, features, media } = req.body;
+
+    // استخراج الميزات سواء أُرْسِلَت كـ Array أو بداخل object
+    const featuresList = Array.isArray(features) 
+      ? features 
+      : (features?.create || []);
+
     const project = await prisma.project.create({
       data: {
-        serviceId: serviceId ? parseInt(serviceId) : null,
-        title, slug, mainImage, description, longDescription, locationText, area,
-        buildStart: buildStart ? new Date(buildStart) : null,
-        buildFinish: buildFinish ? new Date(buildFinish) : null,
-        features: { create: features || [] },
-        media: { create: media || [] }
+        title,
+        slug,
+        mainImage,
+        description,
+        features: featuresList.length > 0 ? {
+          create: featuresList.map(f => ({
+            text: f.text
+          }))
+        } : undefined
       },
-      include: { features: true, media: true }
+      include: {
+        features: true,
+        media: true
+      }
     });
+
     res.status(201).json({ status: 201, data: project });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+exports.addProjectMedia = async (req, res) => {
+  try {
+    const { projectId, url, mediaType } = req.body;
+
+    // التحقق من المدخلات الأساسية
+    if (!projectId || !url) {
+      return res.status(400).json({ 
+        status: 400, 
+        message: "projectId and url are required" 
+      });
+    }
+
+    const media = await prisma.projectMedia.create({
+      data: {
+        projectId: parseInt(projectId),
+        url: url,
+        mediaType: mediaType || (url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
+      }
+    });
+
+    res.status(201).json({ status: 201, data: media });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }

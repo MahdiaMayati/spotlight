@@ -1,91 +1,26 @@
 {
 	"info": {
-		"_postman_id": "spotlight-collection-id",
-		"name": "Spotlight API Collection",
-		"description": "جميع الـ Endpoints الخاصة بمشروع Spotlight - شاملة جداول المستخدمين، الشركاء، الخدمات، المشاريع، الرسائل، الفيديوهات، الأسئلة الشائعة، الروابط الاجتماعية، الإعدادات ورفع الملفات السحابي.",
+		"name": "Spotlight Elektrotechniek API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
 		{
-			"key": "base_url",
-			"value": "http://localhost:5000/api",
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
 			"type": "string"
 		}
 	],
 	"item": [
 		{
-			"name": "0. File Upload (Cloudinary)",
+			"name": "Auth (Admin)",
 			"item": [
 				{
-					"name": "Upload Single File",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": []
-								}
-							]
-						},
-						"url": {
-							"raw": "{{base_url}}/upload",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"upload"
-							]
-						},
-						"description": "يرفع صورة أو فيديو إلى Cloudinary ويرجع رابط URL مباشر لاستخدامه عند إنشاء العناصر."
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "1. Users",
-			"item": [
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User By ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create User",
+					"name": "Admin Login",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -96,628 +31,398 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@spotlight.com\",\n  \"password\": \"secret123\",\n  \"name\": \"Admin User\"\n}"
+							"raw": "{\n  \"email\": \"admin@spotlight.nl\",\n  \"password\": \"secret123\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users"
-							]
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Update User",
+					"name": "Get Admin Profile",
 					"request": {
-						"method": "PUT",
+						"method": "GET",
 						"header": [
 							{
-								"key": "Content-Type",
-								"value": "application/json"
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"Updated Admin Name\"\n}"
-						},
 						"url": {
-							"raw": "{{base_url}}/users/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/users/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "2. Services",
+			"name": "Services",
 			"item": [
 				{
 					"name": "Get All Services",
 					"request": {
 						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "{{base_url}}/services",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"services"
-							]
+							"raw": "{{baseUrl}}/services",
+							"host": ["{{baseUrl}}"],
+							"path": ["services"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Create Service",
+					"name": "Get Service By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/services/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["services", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Service (Admin)",
 					"request": {
 						"method": "POST",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"تطوير المواقع والأنظمة\",\n  \"description\": \"وصف الخدمة هنا\",\n  \"icon\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\"\n}"
+							"raw": "{\n  \"title\": \"Electrical Installation\",\n  \"description\": \"Professional installation service.\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/services",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"services"
-							]
+							"raw": "{{baseUrl}}/services",
+							"host": ["{{baseUrl}}"],
+							"path": ["services"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Update Service",
+					"name": "Update Service (Admin)",
 					"request": {
 						"method": "PUT",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"تطوير تطبيقات الويب الحديثة\",\n  \"description\": \"وصف محدث للخدمة\"\n}"
+							"raw": "{\n  \"title\": \"Updated Title\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/services/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"services",
-								"1"
-							]
+							"raw": "{{baseUrl}}/services/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["services", "1"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Delete Service",
+					"name": "Delete Service (Admin)",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
 						"url": {
-							"raw": "{{base_url}}/services/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"services",
-								"1"
-							]
+							"raw": "{{baseUrl}}/services/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["services", "1"]
 						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "3. Projects",
+			"name": "Projects",
 			"item": [
 				{
 					"name": "Get All Projects",
 					"request": {
 						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "{{base_url}}/projects",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"projects"
-							]
+							"raw": "{{baseUrl}}/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Create Project",
+					"name": "Get Project By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/projects/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Project (Admin)",
 					"request": {
 						"method": "POST",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"مشروع منصة Spotlight\",\n  \"description\": \"تفاصيل المشروع\",\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"link\": \"https://spotlight.com\"\n}"
+							"raw": "{\n  \"title\": \"Project Alpha\",\n  \"image_url\": \"http://example.com/img.jpg\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/projects",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"projects"
-							]
+							"raw": "{{baseUrl}}/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Update Project",
+					"name": "Update Project (Admin)",
 					"request": {
 						"method": "PUT",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"تحديث مشروع منصة Spotlight\"\n}"
-						},
 						"url": {
-							"raw": "{{base_url}}/projects/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"projects",
-								"1"
-							]
+							"raw": "{{baseUrl}}/projects/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "1"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Delete Project",
+					"name": "Delete Project (Admin)",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
 						"url": {
-							"raw": "{{base_url}}/projects/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"projects",
-								"1"
-							]
+							"raw": "{{baseUrl}}/projects/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "1"]
 						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "4. Partners",
+			"name": "Partners",
 			"item": [
 				{
 					"name": "Get All Partners",
 					"request": {
 						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "{{base_url}}/partners",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"partners"
-							]
+							"raw": "{{baseUrl}}/partners",
+							"host": ["{{baseUrl}}"],
+							"path": ["partners"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Create Partner",
+					"name": "Create Partner (Admin)",
 					"request": {
 						"method": "POST",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"شركة الشريك النجاح\",\n  \"logo\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\"\n}"
-						},
 						"url": {
-							"raw": "{{base_url}}/partners",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"partners"
-							]
+							"raw": "{{baseUrl}}/partners",
+							"host": ["{{baseUrl}}"],
+							"path": ["partners"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Delete Partner",
+					"name": "Delete Partner (Admin)",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
 						"url": {
-							"raw": "{{base_url}}/partners/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"partners",
-								"1"
-							]
+							"raw": "{{baseUrl}}/partners/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["partners", "1"]
 						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "5. Messages (Contact Us)",
-			"item": [
-				{
-					"name": "Get All Messages",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/messages",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"messages"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send Message",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"علي أحمد\",\n  \"email\": \"ali@example.com\",\n  \"subject\": \"استفسار عن خدمة\",\n  \"message\": \"أود الاستفسار عن تفاصيل تطوير تطبيق الويب.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/messages",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"messages"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Message",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/messages/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"messages",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "6. Home Videos",
-			"item": [
-				{
-					"name": "Get All Videos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/home-videos",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"home-videos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Home Video",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"فيديو الترحيب بالصفحة الرئيسية\",\n  \"videoUrl\": \"https://res.cloudinary.com/demo/video/upload/sample.mp4\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/home-videos",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"home-videos"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Home Video",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/home-videos/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"home-videos",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "7. FAQs",
+			"name": "FAQs",
 			"item": [
 				{
 					"name": "Get All FAQs",
 					"request": {
 						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "{{base_url}}/faqs",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"faqs"
-							]
+							"raw": "{{baseUrl}}/faqs",
+							"host": ["{{baseUrl}}"],
+							"path": ["faqs"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Create FAQ",
+					"name": "Create FAQ (Admin)",
 					"request": {
 						"method": "POST",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"question\": \"كيف يمكن التواصل معكم؟\",\n  \"answer\": \"يمكن التواصل معنا عبر نموذج التواصـل أو البريد الإلكتروني الرسمي.\"\n}"
-						},
 						"url": {
-							"raw": "{{base_url}}/faqs",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"faqs"
-							]
+							"raw": "{{baseUrl}}/faqs",
+							"host": ["{{baseUrl}}"],
+							"path": ["faqs"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Delete FAQ",
+					"name": "Update FAQ (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/faqs/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["faqs", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete FAQ (Admin)",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
 						"url": {
-							"raw": "{{base_url}}/faqs/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"faqs",
-								"1"
-							]
+							"raw": "{{baseUrl}}/faqs/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["faqs", "1"]
 						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "8. Social Links",
+			"name": "Messages",
 			"item": [
 				{
-					"name": "Get All Social Links",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/social-links",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"social-links"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Social Link",
+					"name": "Send Message (Public)",
 					"request": {
 						"method": "POST",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" }
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"platform\": \"LinkedIn\",\n  \"url\": \"https://linkedin.com/company/spotlight\"\n}"
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"message\": \"Inquiry about services\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/social-links",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"social-links"
-							]
+							"raw": "{{baseUrl}}/messages",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Delete Social Link",
+					"name": "Get All Messages (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/messages",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages"]
+						}
+					}
+				},
+				{
+					"name": "Delete Message (Admin)",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
 						"url": {
-							"raw": "{{base_url}}/social-links/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"social-links",
-								"1"
-							]
+							"raw": "{{baseUrl}}/messages/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["messages", "1"]
 						}
-					},
-					"response": []
+					}
 				}
 			]
 		},
 		{
-			"name": "9. Settings",
+			"name": "Settings & Video",
 			"item": [
 				{
-					"name": "Get All Settings",
+					"name": "Get Settings",
 					"request": {
 						"method": "GET",
-						"header": [],
 						"url": {
-							"raw": "{{base_url}}/settings",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"settings"
-							]
+							"raw": "{{baseUrl}}/settings",
+							"host": ["{{baseUrl}}"],
+							"path": ["settings"]
 						}
-					},
-					"response": []
+					}
 				},
 				{
-					"name": "Create / Update Setting",
+					"name": "Update Settings (Admin)",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"key\": \"site_name\",\n  \"value\": \"Spotlight Platform\"\n}"
-						},
 						"url": {
-							"raw": "{{base_url}}/settings",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"settings"
-							]
+							"raw": "{{baseUrl}}/settings",
+							"host": ["{{baseUrl}}"],
+							"path": ["settings"]
 						}
-					},
-					"response": []
+					}
+				},
+				{
+					"name": "Get Home Video",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/home-video",
+							"host": ["{{baseUrl}}"],
+							"path": ["home-video"]
+						}
+					}
+				},
+				{
+					"name": "Update Home Video (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/home-video",
+							"host": ["{{baseUrl}}"],
+							"path": ["home-video"]
+						}
+					}
 				}
 			]
 		}

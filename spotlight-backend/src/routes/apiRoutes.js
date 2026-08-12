@@ -39,7 +39,8 @@ const faqRoutes = require('./faqRoutes');
 const homeVideoRoutes = require('./homeVideoRoutes');
 const socialLinkRoutes = require('./socialLinkRoutes');
 const settingRoutes = require('./settingRoutes');
-// const uploadRoutes = require('./uploadRoutes'); 
+const verifyAdmin = require('../middlewares/authMiddleware');
+
 
 // ربط كل Route مع المسار الخاص به
 router.use('/services', serviceRoutes);
@@ -51,5 +52,17 @@ router.use('/home-videos', homeVideoRoutes);
 router.use('/social-links', socialLinkRoutes);
 router.use('/settings', settingRoutes);
 
-// app.use('/api/upload', uploadRoutes);
+
+// 1. مسارات مفتوحة للجميع (Public) - بدون Middleware
+router.get('/', serviceController.getAllServices);
+router.get('/:id', serviceController.getServiceById);
+
+// 2. مسارات مخصصة للأدمن فقط (Protected) 
+router.post('/', verifyAdmin, serviceController.createService);
+router.put('/:id', verifyAdmin, serviceController.updateService);
+router.delete('/:id', verifyAdmin, serviceController.deleteService);
+
 module.exports = router;
+
+// https://console.cloudinary.com/app/c-62b7b4699ba5ac56a4a2e5b81d9ce8/assets/media_library/search?q=&view_mode=mosaic
+//npx nodemon server.js

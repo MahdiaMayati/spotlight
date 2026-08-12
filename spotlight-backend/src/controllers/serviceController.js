@@ -56,15 +56,65 @@ exports.getServiceById = async (req, res) => {
 exports.createService = async (req, res) => {
   try {
     const { name, slug, icon, mainImage, description, features, media } = req.body;
+    const featuresList = Array.isArray(features) 
+      ? features 
+      : (features?.create || []);
     const service = await prisma.service.create({
       data: {
         name, slug, icon, mainImage, description,
-        features: { create: features || [] },
-        media: { create: media || [] }
-      },
+        // features: { create: features || [] },
+        // media: { create: media || [] }
+        features: features && features.length > 0 ? {
+      create: features.map(f => ({ text: f.text }))
+    } : undefined,
+    media: media && media.length > 0 ? {
+      create: media.map(m => ({ url: m.url, mediaType: m.mediaType || 'image' }))
+    } : undefined
+  },
       include: { features: true, media: true }
     });
     res.status(201).json({ status: 201, data: service });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+// exports.addServiceMedia = async (req, res) => {
+//   try {
+//     const { serviceId, url, mediaType } = req.body;
+
+//     const media = await prisma.serviceMedia.create({
+//       data: {
+//         serviceId: parseInt(serviceId),
+//         url: url,
+//         mediaType: mediaType || 'image' // image أو video
+//       }
+//     });
+
+//     res.status(201).json({ status: 201, data: media });
+//   } catch (error) {
+//     res.status(500).json({ status: 500, error: error.message });
+//   }
+// };
+
+exports.addServiceMedia = async (req, res) => {
+  try {
+    const { serviceId, url, mediaType } = req.body;
+
+    // التأكد من وجود البيانات الأساسية
+    if (!serviceId || !url) {
+      return res.status(400).json({ status: 400, message: "serviceId and url are required" });
+    }
+
+    const media = await prisma.serviceMedia.create({
+      data: {
+        serviceId: parseInt(serviceId),
+        url: url,
+        mediaType: mediaType || (url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
+      }
+    });
+
+    res.status(201).json({ status: 201, data: media });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
