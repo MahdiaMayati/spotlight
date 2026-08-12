@@ -42,3 +42,18 @@ exports.createOrUpdateSetting = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+exports.deleteSetting = async (req, res) => {
+  try {
+    const { key } = req.params; // أو id حسب التسمية في المسار
+
+    await prisma.siteSetting.delete({
+      where: {
+        settingKey: key // الحذف بـ settingKey
+      }
+    });
+
+    return res.status(200).json({ message: "تم حذف الإعداد بنجاح" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

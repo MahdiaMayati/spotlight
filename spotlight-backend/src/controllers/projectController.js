@@ -59,3 +59,16 @@ exports.createProject = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+exports.deleteProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.project.delete({
+      where: { id: parseInt(id) }
+    });
+
+    return res.status(200).json({ message: "تم حذف المشروع بنجاح" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

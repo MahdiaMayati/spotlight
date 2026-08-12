@@ -718,7 +718,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Setting",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/settings/site_name",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"settings",
+								"site_name"
+							]
+						}
+					},
+					"response": []
 				}
+	
 			]
 		}
 	]

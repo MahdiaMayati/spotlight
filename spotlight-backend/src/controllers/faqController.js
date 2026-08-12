@@ -42,3 +42,20 @@ exports.createFaq = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+exports.deleteFaq = async (req, res) => {
+  try {
+    const id = req.params.id || req.body.id;
+
+    if (!id) {
+      return res.status(400).json({ status: 400, message: "FAQ ID is required" });
+    }
+
+    await prisma.faq.delete({
+      where: { id: parseInt(id) }
+    });
+
+    res.status(200).json({ status: 200, message: "FAQ deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};  
