@@ -6,7 +6,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3000/api",
+			"value": "http://localhost:3000/api/v1",
 			"type": "string"
 		},
 		{
@@ -31,7 +31,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@spotlight.nl\",\n  \"password\": \"secret123\"\n}"
+							"raw": "{\n  \"email\": \"admin@spotlight.nl\",\n  \"password\": \"supersecretpassword123\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/login",
@@ -78,9 +78,9 @@
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{baseUrl}}/services/1",
+							"raw": "{{baseUrl}}/services/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["services", "1"]
+							"path": ["services", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				},
@@ -116,9 +116,9 @@
 							"raw": "{\n  \"title\": \"Updated Title\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/services/1",
+							"raw": "{{baseUrl}}/services/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["services", "1"]
+							"path": ["services", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				},
@@ -130,9 +130,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/services/1",
+							"raw": "{{baseUrl}}/services/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["services", "1"]
+							"path": ["services", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				}
@@ -157,9 +157,9 @@
 					"request": {
 						"method": "GET",
 						"url": {
-							"raw": "{{baseUrl}}/projects/1",
+							"raw": "{{baseUrl}}/projects/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["projects", "1"]
+							"path": ["projects", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				},
@@ -191,9 +191,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/projects/1",
+							"raw": "{{baseUrl}}/projects/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["projects", "1"]
+							"path": ["projects", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				},
@@ -205,9 +205,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/projects/1",
+							"raw": "{{baseUrl}}/projects/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["projects", "1"]
+							"path": ["projects", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				}
@@ -250,9 +250,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/partners/1",
+							"raw": "{{baseUrl}}/partners/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["partners", "1"]
+							"path": ["partners", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				}
@@ -296,9 +296,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/faqs/1",
+							"raw": "{{baseUrl}}/faqs/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["faqs", "1"]
+							"path": ["faqs", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				},
@@ -310,9 +310,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/faqs/1",
+							"raw": "{{baseUrl}}/faqs/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["faqs", "1"]
+							"path": ["faqs", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				}
@@ -361,9 +361,9 @@
 							{ "key": "Authorization", "value": "Bearer {{token}}" }
 						],
 						"url": {
-							"raw": "{{baseUrl}}/messages/1",
+							"raw": "{{baseUrl}}/messages/123e4567-e89b-12d3-a456-426614174000",
 							"host": ["{{baseUrl}}"],
-							"path": ["messages", "1"]
+							"path": ["messages", "123e4567-e89b-12d3-a456-426614174000"]
 						}
 					}
 				}
