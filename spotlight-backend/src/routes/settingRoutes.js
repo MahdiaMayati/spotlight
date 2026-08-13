@@ -4,5 +4,5 @@ const settingCtrl = require('../controllers/settingController');
 
 router.get('/', settingCtrl.getSettings);
 router.post('/', settingCtrl.createOrUpdateSetting);
-                router.delete('/:key', settingCtrl.deleteSetting);
+router.delete('/:key', settingCtrl.deleteSetting);
 module.exports = router;

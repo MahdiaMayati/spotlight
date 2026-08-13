@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 1. Users
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -20,16 +19,14 @@ model User {
   @@map("users")
 }
 
-// 2. Site Settings
 model SiteSetting {
-  settingKey  String  @id @map("setting_key") @db.VarChar(50)
-  settingValue Json   @map("setting_value")
+  settingKey   String  @id @map("setting_key") @db.VarChar(50)
+  settingValue String  @map("setting_value") @db.LongText
   description  String? @db.VarChar(255)
 
   @@map("site_settings")
 }
 
-// 3. Home Videos
 model HomeVideo {
   id          Int      @id @default(autoincrement())
   url         String   @db.VarChar(255)
@@ -42,7 +39,6 @@ model HomeVideo {
   @@map("home_videos")
 }
 
-// 4. Partners
 model Partner {
   id        Int      @id @default(autoincrement())
   linkUrl   String?  @map("link_url") @db.VarChar(255)
@@ -54,7 +50,6 @@ model Partner {
   @@map("partners")
 }
 
-// 5. Social Links
 model SocialLink {
   id        Int      @id @default(autoincrement())
   platform  String   @db.VarChar(50)
@@ -65,11 +60,10 @@ model SocialLink {
   @@map("social_links")
 }
 
-// 6. FAQs
 model Faq {
   id        Int      @id @default(autoincrement())
-  question  Json
-  answer    Json
+  question  String   @db.LongText
+  answer    String   @db.LongText
   sortOrder Int      @default(0) @map("sort_order")
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
@@ -78,44 +72,34 @@ model Faq {
   @@map("faqs")
 }
 
-// 7. Services
 model Service {
-  id          Int      @id @default(autoincrement())
-  name        Json
-  slug        Json
-  icon        String?  @db.VarChar(255)
-  mainImage   String?  @map("main_image") @db.VarChar(255)
-  description Json?
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  features ServiceFeature[]
-  media    ServiceMedia[]
-  messages Message[]
-  projects Project[]
+  id          Int              @id @default(autoincrement())
+  name        String           @db.LongText
+  slug        String           @db.LongText
+  icon        String?          @db.VarChar(255)
+  mainImage   String?          @map("main_image") @db.VarChar(255)
+  description String?          @db.LongText
+  isActive    Boolean          @default(true) @map("is_active")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  messages    Message[]
+  projects    Project[]
+  features    ServiceFeature[]
+  media       ServiceMedia[]
 
   @@map("services")
 }
 
-// 8. Service Features
 model ServiceFeature {
   id        Int      @id @default(autoincrement())
   serviceId Int      @map("service_id")
-  text      Json
+  text      String   @db.LongText
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
+  @@index([serviceId], map: "service_features_service_id_fkey")
   @@map("service_features")
-}
-
-// 9. Service Media
-enum MediaType {
-  image
-  video
 }
 
 model ServiceMedia {
@@ -125,73 +109,64 @@ model ServiceMedia {
   mediaType MediaType @default(image) @map("media_type")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
+  service   Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
+  @@index([serviceId], map: "service_media_service_id_fkey")
   @@map("service_media")
 }
 
-// 10. Messages / Inquiries
-enum MessageStatus {
-  new
-  read
-}
-
 model Message {
-  id            Int           @id @default(autoincrement())
-  serviceId     Int?          @map("service_id")
-  fullName      String        @map("fullname") @db.VarChar(255)
-  phone         String?       @db.VarChar(50)
-  email         String?       @db.VarChar(255)
-  regionProvince String?      @map("region_province") @db.VarChar(100)
-  preferredTime String?       @map("preferred_time") @db.VarChar(100)
-  messageText   String?       @map("message_text") @db.Text
-  status        MessageStatus @default(new)
-  createdAt     DateTime      @default(now()) @map("created_at")
+  id             Int           @id @default(autoincrement())
+  serviceId      Int?          @map("service_id")
+  fullName       String        @map("fullname") @db.VarChar(255)
+  phone          String?       @db.VarChar(50)
+  email          String?       @db.VarChar(255)
+  regionProvince String?       @map("region_province") @db.VarChar(100)
+  preferredTime  String?       @map("preferred_time") @db.VarChar(100)
+  messageText    String?       @map("message_text") @db.Text
+  status         MessageStatus @default(new)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  service        Service?      @relation(fields: [serviceId], references: [id])
 
-  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-
+  @@index([serviceId], map: "messages_service_id_fkey")
   @@map("messages")
 }
 
-// 11. Projects
 model Project {
-  id              Int       @id @default(autoincrement())
-  serviceId       Int?      @map("service_id")
-  title           Json
-  slug            Json
-  mainImage       String?   @map("main_image") @db.VarChar(255)
-  description     Json?
-  longDescription Json?     @map("long_description")
-  locationText    Json?     @map("location_text")
-  area            String?   @db.VarChar(100)
-  buildStart      DateTime? @map("build_start") @db.Date
-  buildFinish     DateTime? @map("build_finish") @db.Date
-  isActive        Boolean   @default(true) @map("is_active")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  id              Int              @id @default(autoincrement())
+  serviceId       Int?             @map("service_id")
+  title           String           @db.LongText
+  slug            String           @db.LongText
+  mainImage       String?          @map("main_image") @db.VarChar(255)
+  description     String?          @db.LongText
+  longDescription String?          @map("long_description") @db.LongText
+  locationText    String?          @map("location_text") @db.LongText
+  area            String?          @db.VarChar(100)
+  buildStart      DateTime?        @map("build_start") @db.Date
+  buildFinish     DateTime?        @map("build_finish") @db.Date
+  isActive        Boolean          @default(true) @map("is_active")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  features        ProjectFeature[]
+  media           ProjectMedia[]
+  service         Service?         @relation(fields: [serviceId], references: [id])
 
-  service  Service?         @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  features ProjectFeature[]
-  media    ProjectMedia[]
-
+  @@index([serviceId], map: "projects_service_id_fkey")
   @@map("projects")
 }
 
-// 12. Project Features
 model ProjectFeature {
   id        Int      @id @default(autoincrement())
   projectId Int      @map("project_id")
-  text      Json
+  text      String   @db.LongText
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
+  @@index([projectId], map: "project_features_project_id_fkey")
   @@map("project_features")
 }
 
-// 13. Project Media
 model ProjectMedia {
   id        Int       @id @default(autoincrement())
   projectId Int       @map("project_id")
@@ -200,8 +175,27 @@ model ProjectMedia {
   sortOrder Int       @default(0) @map("sort_order")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
+  @@index([projectId], map: "project_media_project_id_fkey")
   @@map("project_media")
+}
+
+model pageview {
+  id        Int      @id @default(autoincrement())
+  path      String   @default("/")
+  date      String
+createdAt DateTime @default(now()) @map("created_at")
+@@map("pageview")
+
+}
+
+enum MediaType {
+  image
+  video
+}
+
+enum MessageStatus {
+  new
+  read
 }

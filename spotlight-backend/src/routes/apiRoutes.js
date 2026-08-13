@@ -39,6 +39,8 @@ const faqRoutes = require('./faqRoutes');
 const homeVideoRoutes = require('./homeVideoRoutes');
 const socialLinkRoutes = require('./socialLinkRoutes');
 const settingRoutes = require('./settingRoutes');
+const analyticsRoutes = require('./analyticsRoutes'); // عدلي المسار حسب مكان الملف
+
 // const uploadRoutes = require('./uploadRoutes'); 
 
 // ربط كل Route مع المسار الخاص به
@@ -50,6 +52,7 @@ router.use('/faqs', faqRoutes);
 router.use('/home-videos', homeVideoRoutes);
 router.use('/social-links', socialLinkRoutes);
 router.use('/settings', settingRoutes);
-
+router.use('/analytics', analyticsRoutes);
 // app.use('/api/upload', uploadRoutes);
 module.exports = router;
+
