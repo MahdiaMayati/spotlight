@@ -22,8 +22,8 @@ model User {
 
 // 2. Site Settings
 model SiteSetting {
-  settingKey  String  @id @map("setting_key") @db.VarChar(50)
-  settingValue Json   @map("setting_value")
+  settingKey   String  @id @map("setting_key") @db.VarChar(50)
+  settingValue Json    @map("setting_value")
   description  String? @db.VarChar(255)
 
   @@map("site_settings")
@@ -78,18 +78,18 @@ model Faq {
   @@map("faqs")
 }
 
-// 7. Services
+// 7. Services (UUID)
 model Service {
-  id          Int      @id @default(autoincrement())
-  name        Json
-  slug        Json
-  icon        String?  @db.VarChar(255)
-  mainImage   String?  @map("main_image") @db.VarChar(255)
-  shortDescription Json? @map("short_description")
-  description Json?
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(uuid())
+  name             Json
+  slug             Json
+  icon             String?  @db.VarChar(255)
+  mainImage        String?  @map("main_image") @db.VarChar(255)
+  shortDescription Json?    @map("short_description")
+  description      Json?
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   // Relations
   features ServiceFeature[]
@@ -103,7 +103,7 @@ model Service {
 // 8. Service Features
 model ServiceFeature {
   id        Int      @id @default(autoincrement())
-  serviceId Int      @map("service_id")
+  serviceId String   @map("service_id") 
   text      Json
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -121,7 +121,7 @@ enum MediaType {
 
 model ServiceMedia {
   id        Int       @id @default(autoincrement())
-  serviceId Int       @map("service_id")
+  serviceId String    @map("service_id") 
   url       String    @db.VarChar(255)
   mediaType MediaType @default(image) @map("media_type")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -139,26 +139,26 @@ enum MessageStatus {
 }
 
 model Message {
-  id            Int           @id @default(autoincrement())
-  serviceId     Int?          @map("service_id")
-  fullName      String        @map("fullname") @db.VarChar(255)
-  phone         String?       @db.VarChar(50)
-  email         String?       @db.VarChar(255)
-  regionProvince String?      @map("region_province") @db.VarChar(100)
-  preferredTime String?       @map("preferred_time") @db.VarChar(100)
-  messageText   String?       @map("message_text") @db.Text
-  status        MessageStatus @default(new)
-  createdAt     DateTime      @default(now()) @map("created_at")
+  id             Int           @id @default(autoincrement())
+  serviceId      String?       @map("service_id") 
+  fullName       String        @map("fullname") @db.VarChar(255)
+  phone          String?       @db.VarChar(50)
+  email          String?       @db.VarChar(255)
+  regionProvince String?       @map("region_province") @db.VarChar(100)
+  preferredTime  String?       @map("preferred_time") @db.VarChar(100)
+  messageText    String?       @map("message_text") @db.Text
+  status         MessageStatus @default(new)
+  createdAt      DateTime      @default(now()) @map("created_at")
 
   service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
 
   @@map("messages")
 }
 
-// 11. Projects
+// 11. Projects (UUID)
 model Project {
-  id              Int       @id @default(autoincrement())
-  serviceId       Int?      @map("service_id")
+  id              String    @id @default(uuid()) 
+  serviceId       String?   @map("service_id")   
   title           Json
   slug            Json
   mainImage       String?   @map("main_image") @db.VarChar(255)
@@ -182,7 +182,7 @@ model Project {
 // 12. Project Features
 model ProjectFeature {
   id        Int      @id @default(autoincrement())
-  projectId Int      @map("project_id")
+  projectId String   @map("project_id") 
   text      Json
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -195,7 +195,7 @@ model ProjectFeature {
 // 13. Project Media
 model ProjectMedia {
   id        Int       @id @default(autoincrement())
-  projectId Int       @map("project_id")
+  projectId String    @map("project_id") 
   url       String    @db.VarChar(255)
   mediaType MediaType @default(image) @map("media_type")
   sortOrder Int       @default(0) @map("sort_order")
@@ -207,14 +207,39 @@ model ProjectMedia {
   @@map("project_media")
 }
 
+// 14. Team Members
 model TeamMember {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
-  role      Json     // المسمى الوظيفي (يدعم اللغات)
+  role      Json
   image     String?  @db.VarChar(255)
   order     Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("team_members")
+}
+
+// 15. Analytics / Visitors
+model Visitor {
+  id         String         @id @default(uuid())
+  cookieId   String         @unique @map("cookie_id")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  lastActive DateTime       @updatedAt @map("last_active")
+  visits     AnalyticsLog[]
+
+  @@map("visitors")
+}
+
+model AnalyticsLog {
+  id        Int      @id @default(autoincrement())
+  visitorId String   @map("visitor_id")
+  pageUrl   String   @map("page_url")
+  action    String?
+  entityId  String?  @map("entity_id") 
+  createdAt DateTime @default(now()) @map("created_at")
+
+  visitor Visitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+
+  @@map("analytics_logs")
 }
