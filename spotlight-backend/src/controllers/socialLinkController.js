@@ -41,12 +41,11 @@ exports.createSocialLink = async (req, res) => {
   }
 };
 
-// حذف رابط تواصل اجتماعي
-exports.deleteSocialLink = async (req, res) => {
+exports.updateSocialLink = async (req, res) => {
   try {
     const { id } = req.params;
+    const { platform, url } = req.body;
 
-    // التأكد من وجود الرابط قبل الحذف
     const existingLink = await prisma.socialLink.findUnique({
       where: { id: parseInt(id) }
     });
@@ -57,8 +56,39 @@ exports.deleteSocialLink = async (req, res) => {
         message: 'Social link not found'
       });
     }
+    const updatedLink = await prisma.socialLink.update({
+      where: { id: parseInt(id) },
+      data: { platform, url }
+    });
 
-    // تنفيذ الحذف
+    res.status(200).json({
+      status: 200,
+      data: updatedLink,
+      message: 'Social link updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      error: error.message
+    });
+  }
+};
+
+
+exports.deleteSocialLink = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existingLink = await prisma.socialLink.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingLink) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Social link not found'
+      });
+    }
     await prisma.socialLink.delete({
       where: { id: parseInt(id) }
     });

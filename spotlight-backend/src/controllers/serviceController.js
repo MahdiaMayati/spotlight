@@ -187,11 +187,11 @@ const getServiceById = async (req, res) => {
 // 3. إنشاء خدمة جديدة
 const createService = async (req, res) => {
   try {
-    const { name, slug, icon, mainImage, description, features, media } = req.body;
+    const { name, slug, icon, mainImage,shortDescription, description, features, media } = req.body;
 
     const service = await prisma.service.create({
       data: {
-        name, slug, icon, mainImage, description,
+        name, slug, icon, mainImage,shortDescription, description,
         features: features && features.length > 0 ? {
           create: features.map(f => ({ text: f.text }))
         } : undefined,
@@ -212,11 +212,11 @@ const createService = async (req, res) => {
 const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, slug, icon, mainImage, description } = req.body;
+    const { name, slug, icon, mainImage, shortDescription, description } = req.body;
 
     const updatedService = await prisma.service.update({
       where: { id: parseInt(id) },
-      data: { name, slug, icon, mainImage, description }
+      data: { name, slug, icon, mainImage, shortDescription, description }
     });
 
     res.status(200).json({ status: 200, data: updatedService });

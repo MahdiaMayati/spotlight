@@ -30,7 +30,7 @@
 const express = require('express');
 const router = express.Router();
 
-// استدعاء ملفات المسارات المنفصلة
+
 const serviceRoutes = require('./serviceRoutes');
 const projectRoutes = require('./projectRoutes');
 const messageRoutes = require('./messageRoutes');
@@ -42,10 +42,8 @@ const settingRoutes = require('./settingRoutes');
 const verifyAdmin = require('../middlewares/authMiddleware');
 const serviceController = require('../controllers/serviceController');
 const adminController = require('../controllers/adminController');
+const teamRoutes = require('./teamRoutes');
 
-
-
-// ربط كل Route مع المسار الخاص به
 router.use('/services', serviceRoutes);
 router.use('/projects', projectRoutes);
 router.use('/messages', messageRoutes);
@@ -54,7 +52,7 @@ router.use('/faqs', faqRoutes);
 router.use('/home-videos', homeVideoRoutes);
 router.use('/social-links', socialLinkRoutes);
 router.use('/settings', settingRoutes);
-// مسار تسجيل دخول الأدمن
+router.use('/team', teamRoutes);
 router.post('/admin/login', adminController.login);
 
 module.exports = router;

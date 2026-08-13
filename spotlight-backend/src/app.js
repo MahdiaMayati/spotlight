@@ -17,7 +17,9 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api', apiRoutes);
+app.use('/api/v1', apiRoutes);
+// بدلاً من app.use('/api', apiRoutes);
+
 
 app.get('/', (req, res) => {
   res.json({ message: 'Spotlight API is running smoothly!' });
