@@ -43,12 +43,33 @@ exports.createFaq = async (req, res) => {
   }
 };
 
+
 exports.deleteFaq = async (req, res) => {
   try {
     const { id } = req.params;
-    await prisma.faq.delete({ where: { id: parseInt(id) } });
+    const faqId = parseInt(id);
+
+    if (isNaN(faqId)) {
+      return res.status(400).json({ status: 400, message: "Invalid FAQ ID" });
+    }
+
+    const existingFaq = await prisma.faq.findUnique({ where: { id: faqId } });
+    if (!existingFaq) {
+      return res.status(404).json({ status: 404, message: "FAQ not found" });
+    }
+
+    await prisma.faq.delete({ where: { id: faqId } });
     res.status(200).json({ status: 200, message: "FAQ deleted successfully" });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+// exports.deleteFaq = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     await prisma.faq.delete({ where: { id: parseInt(id) } });
+//     res.status(200).json({ status: 200, message: "FAQ deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ status: 500, error: error.message });
+//   }
+// };
