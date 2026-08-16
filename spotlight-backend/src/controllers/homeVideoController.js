@@ -42,3 +42,38 @@ exports.createHomeVideo = async (req, res) => {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
+
+exports.updateHomeVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { url, sortOrder, isMainVideo, isActive } = req.body;
+
+    const video = await prisma.homeVideo.update({
+      where: { id: parseInt(id) },
+      data: {
+        ...(url && { url }),
+        ...(sortOrder !== undefined && { sortOrder: parseInt(sortOrder) }),
+        ...(isMainVideo !== undefined && { isMainVideo: Boolean(isMainVideo) }),
+        ...(isActive !== undefined && { isActive: Boolean(isActive) }),
+      }
+    });
+
+    res.status(200).json({ status: 200, data: video });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+exports.deleteHomeVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.homeVideo.delete({
+      where: { id: parseInt(id) }
+    });
+
+    res.status(200).json({ status: 200, message: 'Home video deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
