@@ -44,6 +44,39 @@ exports.createFaq = async (req, res) => {
 };
 
 
+exports.updateFaq = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const faqId = parseInt(id);
+
+    if (isNaN(faqId)) {
+      return res.status(400).json({ status: 400, message: "Invalid FAQ ID" });
+    }
+
+    const existingFaq = await prisma.faq.findUnique({ where: { id: faqId } });
+    if (!existingFaq) {
+      return res.status(404).json({ status: 404, message: "FAQ not found" });
+    }
+
+    const { question, answer, sortOrder, isActive } = req.body;
+
+    const updatedFaq = await prisma.faq.update({
+      where: { id: faqId },
+      data: {
+        ...(question && { question }),
+        ...(answer && { answer }),
+        ...(sortOrder !== undefined && { sortOrder: parseInt(sortOrder) }),
+        ...(isActive !== undefined && { isActive: Boolean(isActive) }),
+      }
+    });
+
+    res.status(200).json({ status: 200, data: updatedFaq });
+  } catch (error) {
+    res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+
 exports.deleteFaq = async (req, res) => {
   try {
     const { id } = req.params;
