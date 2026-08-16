@@ -6,7 +6,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3000/api/v1",
+			"value": "https://spotlight-y3bz.onrender.com/api/v1",
 			"type": "string"
 		},
 		{
@@ -34,26 +34,9 @@
 							"raw": "{\n  \"email\": \"admin@spotlight.nl\",\n  \"password\": \"supersecretpassword123\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/auth/login",
-							"host": ["{{baseUrl}}"],
-							"path": ["auth", "login"]
-						}
-					}
-				},
-				{
-					"name": "Get Admin Profile",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/auth/me",
-							"host": ["{{baseUrl}}"],
-							"path": ["auth", "me"]
+							"raw": "{{baseUrl}}/admin/login",
+						"host": ["{{baseUrl}}"],
+						"path": ["admin", "login"]
 						}
 					}
 				}
