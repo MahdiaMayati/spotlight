@@ -77,7 +77,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Electrical Installation\",\n  \"description\": \"Professional installation service.\"\n}"
+							"raw": "{\n  \"name\": \"تطوير تطبيقات الويب\",\n  \"slug\": \"web-development\",\n  \"icon\": \"code-icon\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": \"وصف قصير للخدمة\",\n  \"description\": \"وصف تفصيلي للخدمة\",\n  \"features\": [\n    { \"text\": \"تصميم متجاوب\" },\n    { \"text\": \"حماية متقدمة\" }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/services",
@@ -96,7 +96,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Updated Title\"\n}"
+							"raw": "{\n  \"name\": \"تطوير تطبيقات الويب المتقدمة\",\n  \"slug\": \"advanced-web-development\",\n  \"icon\": \"code-icon-updated\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": \"وصف قصير محدث للخدمة\",\n  \"description\": \"وصف تفصيلي محدث للخدمة\",\n  \"features\": [\n    { \"text\": \"تصميم متجاوب محدث\" },\n    { \"text\": \"حماية عالية جداً\" }\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/services/123e4567-e89b-12d3-a456-426614174000",
@@ -156,8 +156,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Project Alpha\",\n  \"image_url\": \"http://example.com/img.jpg\"\n}"
-						},
+							"raw": "{\n  \"title\": \"مشروع إضاءة مستشفى\",\n  \"slug\": \"hospital-lighting-project\",\n  \"description\": \"تفاصيل تنفيذ المشروع\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"client\": \"شركة العملاء\"\n}"						},
 						"url": {
 							"raw": "{{baseUrl}}/projects",
 							"host": ["{{baseUrl}}"],
