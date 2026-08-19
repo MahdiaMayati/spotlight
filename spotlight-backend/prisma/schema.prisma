@@ -47,7 +47,7 @@ model HomeVideo {
 // 4. Partners
 model Partner {
   id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
+  name      Json    
   linkUrl   String?  @map("link_url") @db.VarChar(255)
   logoUrl   String   @map("logo_url") @db.VarChar(255)
   sortOrder Int      @default(0) @map("sort_order")
@@ -219,7 +219,7 @@ model ProjectMedia {
 // 14. Team Members
 model TeamMember {
   id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
+  name      Json     
   role      Json
   image     String?  @db.VarChar(255)
  sortOrder    Int      @default(0)
