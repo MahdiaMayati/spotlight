@@ -101,25 +101,27 @@
 
 const prisma = require('../config/db');
 
-// دالة مساعدة لمعالجة الحقول التي قد تكون Json أو String قديم
 const parseJsonField = (field) => {
   if (!field) return null;
   if (typeof field === 'object') return field;
+
   try {
-    return JSON.parse(field);
+    const parsed = JSON.parse(field);
+    if (typeof parsed === 'object' && parsed !== null) {
+      return parsed;
+    }
+    return { en: parsed, nl: parsed };
   } catch {
-    return { en: field, nl: field }; // إذا كان نصاً عادياً قديماً تحوله لـ object
+    return { en: field, nl: field };
   }
 };
 
-// 1. جلب جميع أعضاء الفريق مرتبين
 exports.getTeamMembers = async (req, res) => {
   try {
     const members = await prisma.teamMember.findMany({
       orderBy: { sortOrder: 'asc' }
     });
 
-    // معالجة البيانات قبل إرجاعها
     const formattedMembers = members.map(member => ({
       ...member,
       name: parseJsonField(member.name),
@@ -144,8 +146,8 @@ exports.createTeamMember = async (req, res) => {
 
     const newMember = await prisma.teamMember.create({
       data: { 
-        name: typeof name === 'string' ? { en: name, nl: name } : name, 
-        role: typeof role === 'string' ? { en: role, nl: role } : role, 
+        name, 
+        role, 
         image, 
         sortOrder: finalSortOrder !== undefined ? parseInt(finalSortOrder) : 0 
       }
@@ -179,8 +181,8 @@ exports.updateTeamMember = async (req, res) => {
     const updated = await prisma.teamMember.update({
       where: { id: memberId },
       data: { 
-        name: name ? (typeof name === 'string' ? { en: name, nl: name } : name) : undefined, 
-        role: role ? (typeof role === 'string' ? { en: role, nl: role } : role) : undefined, 
+        name: name !== undefined ? name : undefined, 
+        role: role !== undefined ? role : undefined, 
         image, 
         sortOrder: finalSortOrder !== undefined ? parseInt(finalSortOrder) : undefined 
       }
