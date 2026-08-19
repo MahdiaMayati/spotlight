@@ -47,6 +47,7 @@ model HomeVideo {
 // 4. Partners
 model Partner {
   id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
   linkUrl   String?  @map("link_url") @db.VarChar(255)
   logoUrl   String   @map("logo_url") @db.VarChar(255)
   sortOrder Int      @default(0) @map("sort_order")
@@ -81,12 +82,14 @@ model Faq {
 }
 
 // 7. Services (UUID)
+
 model Service {
   id               String   @id @default(uuid())
   name             Json
   slug             Json
   icon             String?  @db.VarChar(255)
   mainImage        String?  @map("main_image") @db.VarChar(255)
+  videoUrl         String?  @map("video_url") @db.VarChar(255) // رابط فيديو الخدمة الرئيسي
   shortDescription Json?    @map("short_description")
   description      Json?
   isActive         Boolean  @default(true) @map("is_active")
@@ -94,12 +97,28 @@ model Service {
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   // Relations
-  features ServiceFeature[]
-  media    ServiceMedia[]
-  messages Message[]
-  projects Project[]
+  features     ServiceFeature[]
+  beforeAfters ServiceBeforeAfter[] // جدول المقارنات
+  messages     Message[]
+  projects     Project[]
+  
 
   @@map("services")
+}
+
+// 2. إنشاء موديل خاص بـ Before & After
+model ServiceBeforeAfter {
+  id        Int      @id @default(autoincrement())
+  serviceId String   @map("service_id")
+  beforeUrl String   @map("before_url") @db.VarChar(255)
+  afterUrl  String   @map("after_url") @db.VarChar(255)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("service_before_after")
 }
 
 // 8. Service Features
@@ -121,18 +140,6 @@ enum MediaType {
   video
 }
 
-model ServiceMedia {
-  id        Int       @id @default(autoincrement())
-  serviceId String    @map("service_id") 
-  url       String    @db.VarChar(255)
-  mediaType MediaType @default(image) @map("media_type")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-  @@map("service_media")
-}
 
 // 10. Messages / Inquiries
 enum MessageStatus {
@@ -215,7 +222,7 @@ model TeamMember {
   name      String   @db.VarChar(255)
   role      Json
   image     String?  @db.VarChar(255)
-  order     Int      @default(0)
+ sortOrder    Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

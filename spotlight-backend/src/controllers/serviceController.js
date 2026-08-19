@@ -385,7 +385,8 @@ const createService = async (req, res) => {
           create: media.map(m => ({ url: m.url, mediaType: m.mediaType || 'image' }))
         } : undefined
       },
-      include: { features: true, media: true }
+      // include: { features: true, media: true }
+      include: {features: true, beforeAfters: true}
     });
 
     res.status(201).json({ status: 201, data: service });
