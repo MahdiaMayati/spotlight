@@ -1,61 +1,10 @@
-// const prisma = require('../config/db');
-
-// exports.getTeamMembers = async (req, res) => {
-//   try {
-//     const members = await prisma.teamMember.findMany({
-//       orderBy: { order: 'asc' }
-//     });
-//     res.status(200).json({ status: 200, data: members });
-//   } catch (error) {
-//     res.status(500).json({ status: 500, error: error.message });
-//   }
-// };
-
-// exports.createTeamMember = async (req, res) => {
-//   try {
-//     const { name, role, image, order } = req.body;
-//     const newMember = await prisma.teamMember.create({
-//       data: { name, role, image, order: order ? parseInt(order) : 0 }
-//     });
-//     res.status(201).json({ status: 201, data: newMember });
-//   } catch (error) {
-//     res.status(500).json({ status: 500, error: error.message });
-//   }
-// };
-
-// exports.updateTeamMember = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { name, role, image, order } = req.body;
-//     const updated = await prisma.teamMember.update({
-//       where: { id: parseInt(id) },
-//       data: { name, role, image, order: order ? parseInt(order) : undefined }
-//     });
-//     res.status(200).json({ status: 200, data: updated });
-//   } catch (error) {
-//     res.status(500).json({ status: 500, error: error.message });
-//   }
-// };
-
-// exports.deleteTeamMember = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     await prisma.teamMember.delete({ where: { id: parseInt(id) } });
-//     res.status(200).json({ status: 200, message: 'Team member deleted successfully' });
-//   } catch (error) {
-//     res.status(500).json({ status: 500, error: error.message });
-//   }
-// };
-
-
-
 const prisma = require('../config/db');
 
 // 1. جلب جميع أعضاء الفريق مرتبين
 exports.getTeamMembers = async (req, res) => {
   try {
     const members = await prisma.teamMember.findMany({
-      orderBy: { order: 'asc' }
+      orderBy: { sortOrder: 'asc' } // ✅ تم التعديل هنا إلى sortOrder
     });
     res.status(200).json({ status: 200, data: members });
   } catch (error) {
@@ -66,7 +15,9 @@ exports.getTeamMembers = async (req, res) => {
 // 2. إضافة عضو جديد للفريق
 exports.createTeamMember = async (req, res) => {
   try {
-    const { name, role, image, order } = req.body;
+    const { name, role, image, sortOrder, order } = req.body;
+    // تم قبول sortOrder أو order من الـ Body للتوافق
+    const finalSortOrder = sortOrder !== undefined ? sortOrder : order;
 
     if (!name || !role) {
       return res.status(400).json({ status: 400, message: "Name and role are required" });
@@ -77,7 +28,7 @@ exports.createTeamMember = async (req, res) => {
         name, 
         role, 
         image, 
-        order: order !== undefined ? parseInt(order) : 0 
+        sortOrder: finalSortOrder !== undefined ? parseInt(finalSortOrder) : 0 // ✅ تم التعديل إلى sortOrder
       }
     });
     res.status(201).json({ status: 201, data: newMember });
@@ -94,7 +45,8 @@ exports.updateTeamMember = async (req, res) => {
       return res.status(400).json({ status: 400, message: "Invalid member ID" });
     }
 
-    const { name, role, image, order } = req.body;
+    const { name, role, image, sortOrder, order } = req.body;
+    const finalSortOrder = sortOrder !== undefined ? sortOrder : order;
 
     const existingMember = await prisma.teamMember.findUnique({
       where: { id: memberId }
@@ -110,7 +62,7 @@ exports.updateTeamMember = async (req, res) => {
         name, 
         role, 
         image, 
-        order: order !== undefined ? parseInt(order) : undefined 
+        sortOrder: finalSortOrder !== undefined ? parseInt(finalSortOrder) : undefined // ✅ تم التعديل إلى sortOrder
       }
     });
 
