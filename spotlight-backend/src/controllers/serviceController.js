@@ -315,7 +315,8 @@ const getAllServices = async (req, res) => {
     const [services, total] = await Promise.all([
       prisma.service.findMany({
         where: { isActive: true },
-        include: { features: true, media: true },
+        // include: { features: true, media: true },
+        include: { features: true, beforeAfters: true},
         skip,
         take: limit,
       }),
@@ -345,7 +346,7 @@ const getServiceById = async (req, res) => {
 
     const service = await prisma.service.findUnique({
       where: { id: serviceId },
-      include: { features: true, media: true, projects: true }
+      include: { features: true, beforeAfters: true, projects: true }
     });
 
     if (!service) {
@@ -371,22 +372,56 @@ const getServiceById = async (req, res) => {
 };
 
 // 3. إنشاء خدمة جديدة
+// const createService = async (req, res) => {
+//   try {
+//     const { name, slug, icon, mainImage, shortDescription, description, features, media } = req.body;
+
+//     const service = await prisma.service.create({
+//       data: {
+//         name, slug, icon, mainImage, shortDescription, description,
+//         features: features && features.length > 0 ? {
+//           create: features.map(f => ({ text: f.text }))
+//         } : undefined,
+//         media: media && media.length > 0 ? {
+//           create: media.map(m => ({ url: m.url, mediaType: m.mediaType || 'image' }))
+//         } : undefined
+//       },
+//       // include: { features: true, media: true }
+//       include: {features: true, beforeAfters: true}
+//     });
+
+//     res.status(201).json({ status: 201, data: service });
+//   } catch (error) {
+//     res.status(500).json({ status: 500, error: error.message });
+//   }
+// };
+
+
 const createService = async (req, res) => {
   try {
-    const { name, slug, icon, mainImage, shortDescription, description, features, media } = req.body;
+    const { name, slug, icon, mainImage, videoUrl, shortDescription, description, features, beforeAfters } = req.body;
 
     const service = await prisma.service.create({
       data: {
-        name, slug, icon, mainImage, shortDescription, description,
+        name,
+        slug,
+        icon,
+        mainImage,
+        videoUrl,
+        shortDescription,
+        description,
         features: features && features.length > 0 ? {
           create: features.map(f => ({ text: f.text }))
         } : undefined,
-        media: media && media.length > 0 ? {
-          create: media.map(m => ({ url: m.url, mediaType: m.mediaType || 'image' }))
+        beforeAfters: beforeAfters && beforeAfters.length > 0 ? {
+          create: beforeAfters.map(ba => ({
+            beforeUrl: ba.beforeUrl,
+            afterUrl: ba.afterUrl,
+            sortOrder: ba.sortOrder || 0
+          }))
         } : undefined
       },
-      // include: { features: true, media: true }
-      include: {features: true, beforeAfters: true}
+      include: { features: true, beforeAfters: true }
     });
 
     res.status(201).json({ status: 201, data: service });
