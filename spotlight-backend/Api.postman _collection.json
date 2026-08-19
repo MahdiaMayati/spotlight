@@ -75,7 +75,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"settingKey\": \"phone\",\n  \"settingValue\": \"+31612345678\",\n  \"description\": \"رقم الهاتف الرئيسي\"\n}"
+              "raw": "{\n  \"settingKey\": \"phone\",\n  \"settingValue\": \"+31612345678\",\n  \"description\": \"Main phone number\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/settings",
@@ -262,7 +262,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"question\": {\n    \"ar\": \"ما هي الخدمات المتاحة؟\",\n    \"en\": \"What services are available?\",\n    \"nl\": \"Welke diensten zijn beschikbaar?\"\n  },\n  \"answer\": {\n    \"ar\": \"نقدم كافة خدمات التمديدات الكهربائية.\",\n    \"en\": \"We offer all electrical installation services.\",\n    \"nl\": \"Wij bieden alle elektrotechnische installatiediensten aan.\"\n  },\n  \"sortOrder\": 0,\n  \"isActive\": true\n}"
+              "raw": "{\n  \"question\": {\n    \"en\": \"What services are available?\",\n    \"nl\": \"Welke diensten zijn beschikbaar?\"\n  },\n  \"answer\": {\n    \"en\": \"We offer all electrical installation services.\",\n    \"nl\": \"Wij bieden alle elektrotechnische installatiediensten aan.\"\n  },\n  \"sortOrder\": 0,\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/faqs",
@@ -281,7 +281,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"question\": {\n    \"ar\": \"ما هي الخدمات المتاحة حالياً؟\",\n    \"nl\": \"Welke diensten zijn momenteel beschikbaar?\"\n  },\n  \"answer\": {\n    \"ar\": \"إجابة محدثة للأسئلة الشائعة.\",\n    \"nl\": \"Bijgewerkt antwoord op veelgestelde vragen.\"\n  },\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+              "raw": "{\n  \"question\": {\n    \"en\": \"What services are currently available?\",\n    \"nl\": \"Welke diensten zijn momenteel beschikbaar?\"\n  },\n  \"answer\": {\n    \"en\": \"Updated answer for frequently asked questions.\",\n    \"nl\": \"Bijgewerkt antwoord op veelgestelde vragen.\"\n  },\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/faqs/1",
@@ -341,7 +341,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": {\n    \"ar\": \"تطوير تطبيقات الويب\",\n    \"nl\": \"Webontwikkeling\"\n  },\n  \"slug\": {\n    \"ar\": \"web-development\",\n    \"nl\": \"webontwikkeling\"\n  },\n  \"icon\": \"code-icon\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": {\n    \"ar\": \"وصف قصير للخدمة\",\n    \"nl\": \"Korte beschrijving\"\n  },\n  \"description\": {\n    \"ar\": \"وصف تفصيلي للخدمة\",\n    \"nl\": \"Gedetailleerde beschrijving\"\n  },\n  \"isActive\": true\n}"
+              "raw": "{\n  \"name\": {\n    \"en\": \"Web Application Development\",\n    \"nl\": \"Webontwikkeling\"\n  },\n  \"slug\": {\n    \"en\": \"web-development\",\n    \"nl\": \"webontwikkeling\"\n  },\n  \"icon\": \"code-icon\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": {\n    \"en\": \"Short service description\",\n    \"nl\": \"Korte beschrijving\"\n  },\n  \"description\": {\n    \"en\": \"Detailed service description\",\n    \"nl\": \"Gedetailleerde beschrijving\"\n  },\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/services",
@@ -360,7 +360,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": {\n    \"ar\": \"تطوير تطبيقات الويب المتقدمة\"\n  },\n  \"slug\": {\n    \"ar\": \"advanced-web-dev\"\n  },\n  \"icon\": \"code-icon-updated\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": {\n    \"ar\": \"وصف قصير محدث\"\n  },\n  \"description\": {\n    \"ar\": \"وصف تفصيلي محدث\"\n  },\n  \"isActive\": true\n}"
+              "raw": "{\n  \"name\": {\n    \"en\": \"Advanced Web Application Development\"\n  },\n  \"slug\": {\n    \"en\": \"advanced-web-dev\"\n  },\n  \"icon\": \"code-icon-updated\",\n  \"mainImage\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"shortDescription\": {\n    \"en\": \"Updated short description\"\n  },\n  \"description\": {\n    \"en\": \"Updated detailed description\"\n  },\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/services/d3b07384-d113-4601-a1e6-010078028f80",
@@ -471,7 +471,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"مشروع إضاءة مستشفى\",\n  \"slug\": \"hospital-lighting-project\",\n  \"description\": \"تفاصيل تنفيذ المشروع\",\n  \"mainImage\": \"project1.png\",\n  \"client\": \"شركة العملاء\",\n  \"serviceId\": null,\n  \"area\": \"150m2\",\n  \"isActive\": true\n}"
+              "raw": "{\n  \"title\": \"Hospital Lighting Project\",\n  \"slug\": \"hospital-lighting-project\",\n  \"description\": \"Project execution details\",\n  \"mainImage\": \"project1.png\",\n  \"client\": \"Client Company\",\n  \"serviceId\": null,\n  \"area\": \"150m2\",\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/projects",
@@ -490,7 +490,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"مشروع إضاءة مستشفى محدث\",\n  \"slug\": \"hospital-lighting-project-updated\",\n  \"description\": \"تفاصيل تنفيذ المشروع المحدثة\",\n  \"mainImage\": \"project1_updated.png\",\n  \"client\": \"شركة العملاء المحدثة\"\n}"
+              "raw": "{\n  \"title\": \"Updated Hospital Lighting Project\",\n  \"slug\": \"hospital-lighting-project-updated\",\n  \"description\": \"Updated project execution details\",\n  \"mainImage\": \"project1_updated.png\",\n  \"client\": \"Updated Client Company\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/projects/30c933e8-f188-42b7-81b2-96312a2852a3",
@@ -539,7 +539,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Smith\",\n  \"role\": {\n    \"ar\": \"مهندس كهرباء\",\n    \"nl\": \"Elektrotechnisch Ingenieur\"\n  },\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/avatar.jpg\",\n  \"order\": 1\n}"
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"role\": {\n    \"en\": \"Electrical Engineer\",\n    \"nl\": \"Elektrotechnisch Ingenieur\"\n  },\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/avatar.jpg\",\n  \"order\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/team",
