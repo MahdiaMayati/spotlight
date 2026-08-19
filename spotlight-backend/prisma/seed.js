@@ -37,25 +37,25 @@ async function main() {
   await prisma.teamMember.createMany({
     data: [
       {
-        name: 'Odai Alabsi',
+        name: { ar: 'عدي العبسي', nl: 'Odai Alabsi' },
         role: { ar: 'مؤسس وقائد الفريق', nl: 'Oprichter & Teamleider' },
         image: 'https://res.cloudinary.com/df7chxawb/image/upload/v1786274808/Gemini_Generated_Image_1udncc1udncc1udn_4_ku6pe4.png',
         sortOrder: 1
       },
       {
-        name: 'Ahmad Ahmad',
+        name: { ar: 'أحمد أحمد', nl: 'Ahmad Ahmad' },
         role: { ar: 'كبير فنيي الكهرباء', nl: 'Eerste Elektricien' },
         image: 'https://res.cloudinary.com/df7chxawb/image/upload/v1786274838/Gemini_Generated_Image_1udncc1udncc1udn_3_l1wmk0.png',
         sortOrder: 2
       },
       {
-        name: 'Ahmad Ahmad',
+        name: { ar: 'أحمد أحمد', nl: 'Ahmad Ahmad' },
         role: { ar: 'مشرف مشاريع', nl: 'Project Supervisor' },
         image: 'https://res.cloudinary.com/df7chxawb/image/upload/v1786274868/Gemini_Generated_Image_1udncc1udncc1udn_2_tbbsou.png',
         sortOrder: 3
       },
       {
-        name: 'Smart Systems Specialist',
+        name: { ar: 'أخصائي أنظمة ذكية', nl: 'Specialist Slimme Systemen' },
         role: { ar: 'أخصائي أنظمة ذكية', nl: 'Specialist Slimme Systemen' },
         image: 'https://res.cloudinary.com/df7chxawb/image/upload/v1786274904/Gemini_Generated_Image_1udncc1udncc1udn_1_jaxbvx.png',
         sortOrder: 4
