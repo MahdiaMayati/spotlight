@@ -94,105 +94,36 @@ const getProjectById = async (req, res) => {
 //     res.status(500).json({ status: 500, error: error.message });
 //   }
 // };
-const createProject = async (req, res) => {
-  try {
-    const { title, slug, mainImage, description, serviceId, features, media } = req.body;
-
-    const featuresList = Array.isArray(features) ? features : (features?.create || []);
-    const mediaList = Array.isArray(media) ? media : (media?.create || []);
-
-    const project = await prisma.project.create({
-      data: {
-        title,
-        slug,
-        mainImage,
-        description,
-        serviceId: serviceId || undefined,
-        features: featuresList.length > 0 ? {
-          create: featuresList.map(f => ({ text: f.text }))
-        } : undefined,
-        media: mediaList.length > 0 ? {
-          create: mediaList.map(m => ({
-            url: m.url,
-            mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
-          }))
-        } : undefined
-      },
-      include: { features: true, media: true, service: true }
-    });
-
-    res.status(201).json({ status: 201, data: project });
-  } catch (error) {
-    res.status(500).json({ status: 500, error: error.message });
-  }
-};
-
-// 4. تحديث مشروع
-// const updateProject = async (req, res) => {
+// const createProject = async (req, res) => {
 //   try {
-//     const { id } = req.params; // 👈 بدون parseInt
-//     const { title, slug, mainImage, description, serviceId, isActive } = req.body;
+//     const { title, slug, mainImage, description, serviceId, features, media } = req.body;
 
-//     const updatedProject = await prisma.project.update({
-//       where: { id: id },
-//       data: { 
-//         title, 
-//         slug, 
-//         mainImage, 
-//         description, 
-//         serviceId: serviceId || undefined, 
-//         isActive 
+//     const featuresList = Array.isArray(features) ? features : (features?.create || []);
+//     const mediaList = Array.isArray(media) ? media : (media?.create || []);
+
+//     const project = await prisma.project.create({
+//       data: {
+//         title,
+//         slug,
+//         mainImage,
+//         description,
+//         serviceId: serviceId || undefined,
+//         features: featuresList.length > 0 ? {
+//           create: featuresList.map(f => ({ text: f.text }))
+//         } : undefined,
+//         media: mediaList.length > 0 ? {
+//           create: mediaList.map(m => ({
+//             url: m.url,
+//             mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
+//           }))
+//         } : undefined
 //       },
-//       include: { features: true, media: true }
-//     });
-
-//     res.status(200).json({ status: 200, data: updatedProject });
-//   } catch (error) {
-//     res.status(500).json({ status: 500, error: error.message });
-//   }
-// };
-// const updateProject = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { title, slug, description, mainImage, client, serviceId, area, isActive, features, media } = req.body;
-
-//     const dataToUpdate = {
-//       ...(title && { title }),
-//       ...(slug && { slug }),
-//       ...(description !== undefined && { description }),
-//       ...(mainImage !== undefined && { mainImage }),
-//       ...(client !== undefined && { client }),
-//       ...(serviceId !== undefined && { serviceId }),
-//       ...(area !== undefined && { area }),
-//       ...(isActive !== undefined && { isActive }),
-//     };
-
-//     if (features && Array.isArray(features)) {
-//       dataToUpdate.features = {
-//         deleteMany: {},
-//         create: features.map(f => ({ text: f.text }))
-//       };
-//     }
-
-//     if (media && Array.isArray(media)) {
-//       dataToUpdate.media = {
-//         deleteMany: {},
-//         create: media.map(m => ({
-//           url: m.url,
-//           mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
-//         }))
-//       };
-//     }
-
-//     const updatedProject = await prisma.project.update({
-//       where: { id },
-//       data: dataToUpdate,
 //       include: { features: true, media: true, service: true }
 //     });
 
-//     res.status(200).json({ status: 200, data: updatedProject });
+//     res.status(201).json({ status: 201, data: project });
 //   } catch (error) {
-//     res.status(500).json({ status: 500, message: error.message });
+//     res.status(500).json({ status: 500, error: error.message });
 //   }
 // };
 
@@ -232,6 +163,75 @@ const createProject = async (req, res) => {
     res.status(201).json({ status: 201, data: project });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
+  }
+};
+
+// 4. تحديث مشروع
+// const updateProject = async (req, res) => {
+//   try {
+//     const { id } = req.params; // 👈 بدون parseInt
+//     const { title, slug, mainImage, description, serviceId, isActive } = req.body;
+
+//     const updatedProject = await prisma.project.update({
+//       where: { id: id },
+//       data: { 
+//         title, 
+//         slug, 
+//         mainImage, 
+//         description, 
+//         serviceId: serviceId || undefined, 
+//         isActive 
+//       },
+//       include: { features: true, media: true }
+//     });
+
+//     res.status(200).json({ status: 200, data: updatedProject });
+//   } catch (error) {
+//     res.status(500).json({ status: 500, error: error.message });
+//   }
+// };
+const updateProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, slug, description, mainImage, client, serviceId, area, isActive, features, media } = req.body;
+
+    const dataToUpdate = {
+      ...(title && { title }),
+      ...(slug && { slug }),
+      ...(description !== undefined && { description }),
+      ...(mainImage !== undefined && { mainImage }),
+      ...(client !== undefined && { client }),
+      ...(serviceId !== undefined && { serviceId }),
+      ...(area !== undefined && { area }),
+      ...(isActive !== undefined && { isActive }),
+    };
+
+    if (features && Array.isArray(features)) {
+      dataToUpdate.features = {
+        deleteMany: {},
+        create: features.map(f => ({ text: f.text }))
+      };
+    }
+
+    if (media && Array.isArray(media)) {
+      dataToUpdate.media = {
+        deleteMany: {},
+        create: media.map(m => ({
+          url: m.url,
+          mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
+        }))
+      };
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: dataToUpdate,
+      include: { features: true, media: true, service: true }
+    });
+
+    res.status(200).json({ status: 200, data: updatedProject });
+  } catch (error) {
+    res.status(500).json({ status: 500, message: error.message });
   }
 };
 // 5. حذف مشروع
