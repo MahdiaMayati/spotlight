@@ -11,5 +11,5 @@ router.get('/:id', serviceController.getServiceById);
 router.post('/', verifyAdmin, serviceController.createService);
 router.put('/:id', verifyAdmin, serviceController.updateService);
 router.delete('/:id', verifyAdmin, serviceController.deleteService);
-router.post('/media', verifyAdmin, serviceController.addServiceMedia);
+// router.post('/media', verifyAdmin, serviceController.addServiceMedia);
 module.exports = router;
