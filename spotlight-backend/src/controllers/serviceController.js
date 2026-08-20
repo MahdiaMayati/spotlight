@@ -144,42 +144,88 @@ const createService = async (req, res) => {
 // };
 
 // 4. تحديث خدمة
+// const updateService = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { name, slug, icon, mainImage, videoUrl, shortDescription, description, features, beforeAfters } = req.body;
+
+//     const updatedService = await prisma.service.update({
+//       where: { id },
+//       data: {
+//         name,
+//         slug,
+//         icon,
+//         mainImage,
+//         videoUrl,
+//         shortDescription,
+//         description,
+//         // إذا أرسل الفرونت ميزات جديدة، يمسح القديم ويضيف الجديد
+//         features: features ? {
+//           deleteMany: {},
+//           create: features.map(f => ({ text: f.text }))
+//         } : undefined,
+//         // إذا أرسل الفرونت صور قبل/بعد جديدة، يمسح القديم ويضيف الجديد
+//         beforeAfters: beforeAfters ? {
+//           deleteMany: {},
+//           create: beforeAfters.map(ba => ({
+//             beforeUrl: ba.beforeUrl,
+//             afterUrl: ba.afterUrl,
+//             sortOrder: ba.sortOrder || 0
+//           }))
+//         } : undefined
+//       },
+//       include: { features: true, beforeAfters: true }
+//     });
+
+//     res.status(200).json({ status: 200, data: updatedService });
+//   } catch (error) {
+//     res.status(500).json({ status: 500, error: error.message });
+//   }
+// };
+
+
 const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, slug, icon, mainImage, videoUrl, shortDescription, description, features, beforeAfters } = req.body;
+    const { name, slug, icon, mainImage, shortDescription, description, isActive, features, beforeAfters } = req.body;
+
+    const dataToUpdate = {
+      ...(name && { name }),
+      ...(slug && { slug }),
+      ...(icon !== undefined && { icon }),
+      ...(mainImage !== undefined && { mainImage }),
+      ...(shortDescription !== undefined && { shortDescription }),
+      ...(description !== undefined && { description }),
+      ...(isActive !== undefined && { isActive }),
+    };
+
+    if (features && Array.isArray(features)) {
+      dataToUpdate.features = {
+        deleteMany: {},
+        create: features.map(f => ({ text: f.text }))
+      };
+    }
+
+    if (beforeAfters && Array.isArray(beforeAfters)) {
+      dataToUpdate.beforeAfters = {
+        deleteMany: {},
+        create: beforeAfters.map(b => ({
+          beforeImage: b.beforeImage,
+          afterImage: b.afterImage,
+          title: b.title
+        }))
+      };
+    }
 
     const updatedService = await prisma.service.update({
       where: { id },
-      data: {
-        name,
-        slug,
-        icon,
-        mainImage,
-        videoUrl,
-        shortDescription,
-        description,
-        // إذا أرسل الفرونت ميزات جديدة، يمسح القديم ويضيف الجديد
-        features: features ? {
-          deleteMany: {},
-          create: features.map(f => ({ text: f.text }))
-        } : undefined,
-        // إذا أرسل الفرونت صور قبل/بعد جديدة، يمسح القديم ويضيف الجديد
-        beforeAfters: beforeAfters ? {
-          deleteMany: {},
-          create: beforeAfters.map(ba => ({
-            beforeUrl: ba.beforeUrl,
-            afterUrl: ba.afterUrl,
-            sortOrder: ba.sortOrder || 0
-          }))
-        } : undefined
-      },
+      data: dataToUpdate,
       include: { features: true, beforeAfters: true }
     });
 
     res.status(200).json({ status: 200, data: updatedService });
   } catch (error) {
-    res.status(500).json({ status: 500, error: error.message });
+    res.status(500).json({ status: 500, message: error.message });
   }
 };
 

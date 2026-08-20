@@ -154,38 +154,47 @@ const createProject = async (req, res) => {
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, slug, mainImage, description, serviceId, isActive, features, media } = req.body;
+    const { title, slug, description, mainImage, client, serviceId, area, isActive, features, media } = req.body;
+
+    const dataToUpdate = {
+      ...(title && { title }),
+      ...(slug && { slug }),
+      ...(description !== undefined && { description }),
+      ...(mainImage !== undefined && { mainImage }),
+      ...(client !== undefined && { client }),
+      ...(serviceId !== undefined && { serviceId }),
+      ...(area !== undefined && { area }),
+      ...(isActive !== undefined && { isActive }),
+    };
+
+    if (features && Array.isArray(features)) {
+      dataToUpdate.features = {
+        deleteMany: {},
+        create: features.map(f => ({ text: f.text }))
+      };
+    }
+
+    if (media && Array.isArray(media)) {
+      dataToUpdate.media = {
+        deleteMany: {},
+        create: media.map(m => ({
+          url: m.url,
+          mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
+        }))
+      };
+    }
 
     const updatedProject = await prisma.project.update({
       where: { id },
-      data: { 
-        title, 
-        slug, 
-        mainImage, 
-        description, 
-        serviceId: serviceId || undefined, 
-        isActive,
-        features: features ? {
-          deleteMany: {},
-          create: features.map(f => ({ text: f.text }))
-        } : undefined,
-        media: media ? {
-          deleteMany: {},
-          create: media.map(m => ({
-            url: m.url,
-            mediaType: m.mediaType || (m.url.match(/\.(mp4|mov|avi|wmv|mkv)$/i) ? 'video' : 'image')
-          }))
-        } : undefined
-      },
+      data: dataToUpdate,
       include: { features: true, media: true, service: true }
     });
 
     res.status(200).json({ status: 200, data: updatedProject });
   } catch (error) {
-    res.status(500).json({ status: 500, error: error.message });
+    res.status(500).json({ status: 500, message: error.message });
   }
 };
-
 // 5. حذف مشروع
 const deleteProject = async (req, res) => {
   try {
