@@ -12,7 +12,5 @@ router.post('/', verifyAdmin, projectController.createProject);
 router.put('/:id', verifyAdmin, projectController.updateProject);
 router.delete('/:id', verifyAdmin, projectController.deleteProject);
 
-// Media
-// router.post('/media', verifyAdmin, projectController.addProjectMedia);
 
 module.exports = router;
