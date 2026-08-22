@@ -3,9 +3,9 @@ const prisma = require('../config/db');
 
 const formatServiceData = (service) => {
   if (!service) return null;
-  const media = service.media || [];
+  const { media = [], ...rest } = service; // استبعاد media من rest
   return {
-    ...service,
+    ...rest,
     beforeImages: media.filter(m => m.type === 'BEFORE').map(m => m.url),
     afterImages: media.filter(m => m.type === 'AFTER').map(m => m.url),
     videos: media.filter(m => m.type === 'VIDEO').map(m => m.url),

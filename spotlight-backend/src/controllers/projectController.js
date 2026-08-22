@@ -4,9 +4,9 @@ const prisma = require('../config/db');
 // دالة تحويل البيانات لتناسب الفرونت إند
 const formatProjectData = (project) => {
   if (!project) return null;
-  const media = project.media || [];
+  const { media = [], ...rest } = project; // استبعاد media من rest
   return {
-    ...project,
+    ...rest,
     beforeImages: media.filter(m => m.type === 'BEFORE').map(m => m.url),
     afterImages: media.filter(m => m.type === 'AFTER').map(m => m.url),
     videos: media.filter(m => m.type === 'VIDEO').map(m => m.url),
