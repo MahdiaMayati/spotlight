@@ -81,32 +81,28 @@ model Faq {
   @@map("faqs")
 }
 
-// 7. Services (UUID)
-
+// 1. موديل الخدمات
 model Service {
-  id               String   @id @default(uuid())
+  id               String               @id @default(uuid())
   name             Json
   slug             Json
-  icon             String?  @db.VarChar(255)
-  mainImage        String?  @map("main_image") @db.VarChar(255)
-  videoUrl         String?  @map("video_url") @db.VarChar(255) // رابط فيديو الخدمة الرئيسي
-  shortDescription Json?    @map("short_description")
+  icon             String?              @db.VarChar(255)
+  mainImage        String?              @map("main_image") @db.VarChar(255)
+  videoUrl         String?              @map("video_url") @db.VarChar(255) // رابط الفيديو الرئيسي
+  shortDescription Json?                @map("short_description")
   description      Json?
-  isActive         Boolean  @default(true) @map("is_active")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  isActive         Boolean              @default(true) @map("is_active")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
 
-  // Relations
-  features     ServiceFeature[]
-  beforeAfters ServiceBeforeAfter[] // جدول المقارنات
-  messages     Message[]
-  projects     Project[]
-  
+  features         ServiceFeature[]
+  beforeAfters     ServiceBeforeAfter[]
+  messages         Message[]
+  projects         Project[]
 
   @@map("services")
 }
 
-// 2. إنشاء موديل خاص بـ Before & After
 model ServiceBeforeAfter {
   id        Int      @id @default(autoincrement())
   serviceId String   @map("service_id")
@@ -116,30 +112,73 @@ model ServiceBeforeAfter {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("service_before_after")
 }
 
-// 8. Service Features
 model ServiceFeature {
   id        Int      @id @default(autoincrement())
-  serviceId String   @map("service_id") 
+  serviceId String   @map("service_id")
   text      Json
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("service_features")
 }
 
-// 9. Service Media
-enum MediaType {
-  image
-  video
+// 2. موديل المشاريع
+model Project {
+  id              String               @id @default(uuid())
+  serviceId       String?              @map("service_id")
+  title           Json
+  slug            Json
+  mainImage       String?              @map("main_image") @db.VarChar(255)
+  videoUrl        String?              @map("video_url") @db.VarChar(255) // تم إضافته للمشاريع
+  description     Json?
+  longDescription Json?                @map("long_description")
+  locationText    Json?                @map("location_text")
+  area            String?              @db.VarChar(100)
+  buildStart      DateTime?            @map("build_start") @db.Date
+  buildFinish     DateTime?            @map("build_finish") @db.Date
+  isActive        Boolean              @default(true) @map("is_active")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+
+  service         Service?             @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  features        ProjectFeature[]
+  beforeAfters    ProjectBeforeAfter[] // تم إضافته للمشاريع
+
+  @@map("projects")
 }
 
+model ProjectBeforeAfter {
+  id        Int      @id @default(autoincrement())
+  projectId String   @map("project_id")
+  beforeUrl String   @map("before_url") @db.VarChar(255)
+  afterUrl  String   @map("after_url") @db.VarChar(255)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_before_after")
+}
+
+model ProjectFeature {
+  id        Int      @id @default(autoincrement())
+  projectId String   @map("project_id")
+  text      Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_features")
+}
 
 // 10. Messages / Inquiries
 enum MessageStatus {
@@ -162,58 +201,6 @@ model Message {
   service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
 
   @@map("messages")
-}
-
-// 11. Projects (UUID)
-model Project {
-  id              String    @id @default(uuid()) 
-  serviceId       String?   @map("service_id")   
-  title           Json
-  slug            Json
-  mainImage       String?   @map("main_image") @db.VarChar(255)
-  description     Json?
-  longDescription Json?     @map("long_description")
-  locationText    Json?     @map("location_text")
-  area            String?   @db.VarChar(100)
-  buildStart      DateTime? @map("build_start") @db.Date
-  buildFinish     DateTime? @map("build_finish") @db.Date
-  isActive        Boolean   @default(true) @map("is_active")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-
-  service  Service?         @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  features ProjectFeature[]
-  media    ProjectMedia[]
-
-  @@map("projects")
-}
-
-// 12. Project Features
-model ProjectFeature {
-  id        Int      @id @default(autoincrement())
-  projectId String   @map("project_id") 
-  text      Json
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@map("project_features")
-}
-
-// 13. Project Media
-model ProjectMedia {
-  id        Int       @id @default(autoincrement())
-  projectId String    @map("project_id") 
-  url       String    @db.VarChar(255)
-  mediaType MediaType @default(image) @map("media_type")
-  sortOrder Int       @default(0) @map("sort_order")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@map("project_media")
 }
 
 // 14. Team Members
