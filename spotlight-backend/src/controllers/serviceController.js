@@ -281,7 +281,17 @@
 
 const prisma = require('../config/db');
 
-// 1. جلب جميع الخدمات مع Pagination
+const formatServiceData = (service) => {
+  if (!service) return null;
+  const media = service.media || [];
+  return {
+    ...service,
+    beforeImages: media.filter(m => m.type === 'BEFORE').map(m => m.url),
+    afterImages: media.filter(m => m.type === 'AFTER').map(m => m.url),
+    videos: media.filter(m => m.type === 'VIDEO').map(m => m.url),
+  };
+};
+
 const getAllServices = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -291,7 +301,7 @@ const getAllServices = async (req, res) => {
     const [services, total] = await Promise.all([
       prisma.service.findMany({
         where: { isActive: true },
-        include: { features: true, beforeAfters: true },
+        include: { features: true, media: true },
         skip,
         take: limit,
       }),
@@ -300,99 +310,67 @@ const getAllServices = async (req, res) => {
 
     res.status(200).json({
       status: 200,
-      pagination: { 
-        totalItems: total, 
-        currentPage: page, 
-        totalPages: Math.ceil(total / limit), 
-        limit 
-      },
-      data: services
+      pagination: { totalItems: total, currentPage: page, totalPages: Math.ceil(total / limit), limit },
+      data: services.map(formatServiceData)
     });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 2. جلب خدمة واحدة بواسطة UUID
 const getServiceById = async (req, res) => {
   try {
     const serviceId = req.params.id;
-
     const service = await prisma.service.findUnique({
       where: { id: serviceId },
-      include: { features: true, beforeAfters: true, projects: true }
+      include: { features: true, media: true, projects: true }
     });
 
-    if (!service) {
-      return res.status(404).json({ status: 404, message: 'Service not found' });
-    }
+    if (!service) return res.status(404).json({ status: 404, message: 'Service not found' });
 
-    if (req.visitorId) {
-      await prisma.analyticsLog.create({
-        data: {
-          visitorId: req.visitorId,
-          pageUrl: `/services/${serviceId}`,
-          action: 'VIEW_SERVICE',
-          entityId: serviceId
-        }
-      });
-    }
-
-    res.status(200).json({ status: 200, data: service });
+    res.status(200).json({ status: 200, data: formatServiceData(service) });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 3. إنشاء خدمة جديدة
 const createService = async (req, res) => {
   try {
-    const { name, slug, icon, mainImage, videoUrl, shortDescription, description, features, beforeAfters } = req.body;
+    const { name, slug, icon, mainImage, shortDescription, description, features, beforeImages, afterImages, videos } = req.body;
 
-    const featuresList = Array.isArray(features) ? features : [];
-    const beforeAfterList = Array.isArray(beforeAfters) ? beforeAfters : [];
+    const mediaToCreate = [
+      ...(Array.isArray(beforeImages) ? beforeImages.map(url => ({ url, type: 'BEFORE' })) : []),
+      ...(Array.isArray(afterImages) ? afterImages.map(url => ({ url, type: 'AFTER' })) : []),
+      ...(Array.isArray(videos) ? videos.map(url => ({ url, type: 'VIDEO' })) : [])
+    ];
 
     const service = await prisma.service.create({
       data: {
-        name,
-        slug,
-        icon,
-        mainImage,
-        videoUrl,
-        shortDescription,
-        description,
-        features: featuresList.length > 0 ? {
-          create: featuresList.map(f => ({ text: typeof f === 'object' ? f.text : f }))
+        name, slug, icon, mainImage, shortDescription, description,
+        features: features && features.length > 0 ? {
+          create: features.map(f => ({ text: typeof f === 'object' ? f.text : f }))
         } : undefined,
-        beforeAfters: beforeAfterList.length > 0 ? {
-          create: beforeAfterList.map(ba => ({
-            beforeUrl: ba.beforeUrl || ba.beforeImage,
-            afterUrl: ba.afterUrl || ba.afterImage,
-            sortOrder: ba.sortOrder || 0
-          }))
-        } : undefined
+        media: mediaToCreate.length > 0 ? { create: mediaToCreate } : undefined
       },
-      include: { features: true, beforeAfters: true }
+      include: { features: true, media: true }
     });
 
-    res.status(201).json({ status: 201, data: service });
+    res.status(201).json({ status: 201, data: formatServiceData(service) });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 4. تحديث خدمة
 const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, slug, icon, mainImage, videoUrl, shortDescription, description, isActive, features, beforeAfters } = req.body;
+    const { name, slug, icon, mainImage, shortDescription, description, isActive, features, beforeImages, afterImages, videos } = req.body;
 
     const dataToUpdate = {
       ...(name && { name }),
       ...(slug && { slug }),
       ...(icon !== undefined && { icon }),
       ...(mainImage !== undefined && { mainImage }),
-      ...(videoUrl !== undefined && { videoUrl }),
       ...(shortDescription !== undefined && { shortDescription }),
       ...(description !== undefined && { description }),
       ...(isActive !== undefined && { isActive }),
@@ -405,48 +383,38 @@ const updateService = async (req, res) => {
       };
     }
 
-    if (beforeAfters && Array.isArray(beforeAfters)) {
-      dataToUpdate.beforeAfters = {
+    if (beforeImages || afterImages || videos) {
+      const mediaToCreate = [
+        ...(Array.isArray(beforeImages) ? beforeImages.map(url => ({ url, type: 'BEFORE' })) : []),
+        ...(Array.isArray(afterImages) ? afterImages.map(url => ({ url, type: 'AFTER' })) : []),
+        ...(Array.isArray(videos) ? videos.map(url => ({ url, type: 'VIDEO' })) : [])
+      ];
+      dataToUpdate.media = {
         deleteMany: {},
-        create: beforeAfters.map(ba => ({
-          beforeUrl: ba.beforeUrl || ba.beforeImage,
-          afterUrl: ba.afterUrl || ba.afterImage,
-          sortOrder: ba.sortOrder || 0
-        }))
+        create: mediaToCreate
       };
     }
 
     const updatedService = await prisma.service.update({
       where: { id },
       data: dataToUpdate,
-      include: { features: true, beforeAfters: true }
+      include: { features: true, media: true }
     });
 
-    res.status(200).json({ status: 200, data: updatedService });
+    res.status(200).json({ status: 200, data: formatServiceData(updatedService) });
   } catch (error) {
     res.status(500).json({ status: 500, message: error.message });
   }
 };
 
-// 5. حذف خدمة
 const deleteService = async (req, res) => {
   try {
     const { id } = req.params;
-
-    await prisma.service.delete({
-      where: { id: id }
-    });
-
+    await prisma.service.delete({ where: { id } });
     res.status(200).json({ status: 200, message: 'Service deleted successfully' });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-module.exports = {
-  getAllServices,
-  getServiceById,
-  createService,
-  updateService,
-  deleteService
-};
+module.exports = { getAllServices, getServiceById, createService, updateService, deleteService };

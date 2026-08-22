@@ -304,7 +304,18 @@
 
 const prisma = require('../config/db');
 
-// 1. جلب المشاريع مع Pagination
+// دالة تحويل البيانات لتناسب الفرونت إند
+const formatProjectData = (project) => {
+  if (!project) return null;
+  const media = project.media || [];
+  return {
+    ...project,
+    beforeImages: media.filter(m => m.type === 'BEFORE').map(m => m.url),
+    afterImages: media.filter(m => m.type === 'AFTER').map(m => m.url),
+    videos: media.filter(m => m.type === 'VIDEO').map(m => m.url),
+  };
+};
+
 const getProjects = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -314,7 +325,7 @@ const getProjects = async (req, res) => {
     const [projects, total] = await Promise.all([
       prisma.project.findMany({
         where: { isActive: true },
-        include: { features: true, beforeAfters: true, service: true },
+        include: { features: true, media: true, service: true },
         skip,
         take: limit,
       }),
@@ -324,102 +335,76 @@ const getProjects = async (req, res) => {
     res.status(200).json({
       status: 200,
       pagination: { totalItems: total, currentPage: page, totalPages: Math.ceil(total / limit), limit },
-      data: projects
+      data: projects.map(formatProjectData)
     });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 2. جلب مشروع بواسطة UUID
 const getProjectById = async (req, res) => {
   try {
     const projectId = req.params.id;
-
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      include: { features: true, beforeAfters: true, service: true }
+      include: { features: true, media: true, service: true }
     });
 
-    if (!project) {
-      return res.status(404).json({ status: 404, message: 'Project not found' });
-    }
+    if (!project) return res.status(404).json({ status: 404, message: 'Project not found' });
 
-    if (req.visitorId) {
-      await prisma.analyticsLog.create({
-        data: {
-          visitorId: req.visitorId,
-          pageUrl: `/projects/${projectId}`,
-          action: 'VIEW_PROJECT',
-          entityId: projectId
-        }
-      });
-    }
-
-    res.status(200).json({ status: 200, data: project });
+    res.status(200).json({ status: 200, data: formatProjectData(project) });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 3. إنشاء مشروع جديد
 const createProject = async (req, res) => {
   try {
     const { 
-      title, slug, mainImage, videoUrl, description, longDescription, 
-      locationText, area, buildStart, buildFinish, serviceId, features, beforeAfters 
+      title, slug, mainImage, description, longDescription, 
+      locationText, area, buildStart, buildFinish, serviceId, 
+      features, beforeImages, afterImages, videos 
     } = req.body;
 
-    const featuresList = Array.isArray(features) ? features : [];
-    const beforeAfterList = Array.isArray(beforeAfters) ? beforeAfters : [];
+    const mediaToCreate = [
+      ...(Array.isArray(beforeImages) ? beforeImages.map(url => ({ url, type: 'BEFORE' })) : []),
+      ...(Array.isArray(afterImages) ? afterImages.map(url => ({ url, type: 'AFTER' })) : []),
+      ...(Array.isArray(videos) ? videos.map(url => ({ url, type: 'VIDEO' })) : [])
+    ];
 
     const project = await prisma.project.create({
       data: {
-        title,
-        slug,
-        mainImage,
-        videoUrl,
-        description,
-        longDescription,
-        locationText,
-        area,
+        title, slug, mainImage, description, longDescription, locationText, area,
         buildStart: buildStart ? new Date(buildStart) : null,
         buildFinish: buildFinish ? new Date(buildFinish) : null,
         serviceId: serviceId || undefined,
-        features: featuresList.length > 0 ? {
-          create: featuresList.map(f => ({ text: typeof f === 'object' ? f.text : f }))
+        features: features && features.length > 0 ? {
+          create: features.map(f => ({ text: typeof f === 'object' ? f.text : f }))
         } : undefined,
-        beforeAfters: beforeAfterList.length > 0 ? {
-          create: beforeAfterList.map(ba => ({
-            beforeUrl: ba.beforeUrl || ba.beforeImage,
-            afterUrl: ba.afterUrl || ba.afterImage,
-            sortOrder: ba.sortOrder || 0
-          }))
-        } : undefined
+        media: mediaToCreate.length > 0 ? { create: mediaToCreate } : undefined
       },
-      include: { features: true, beforeAfters: true, service: true }
+      include: { features: true, media: true, service: true }
     });
 
-    res.status(201).json({ status: 201, data: project });
+    res.status(201).json({ status: 201, data: formatProjectData(project) });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-// 4. تحديث مشروع
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
     const { 
-      title, slug, mainImage, videoUrl, description, longDescription, 
-      locationText, area, buildStart, buildFinish, serviceId, isActive, features, beforeAfters 
+      title, slug, mainImage, description, longDescription, 
+      locationText, area, buildStart, buildFinish, serviceId, isActive, 
+      features, beforeImages, afterImages, videos 
     } = req.body;
 
     const dataToUpdate = {
       ...(title && { title }),
       ...(slug && { slug }),
       ...(mainImage !== undefined && { mainImage }),
-      ...(videoUrl !== undefined && { videoUrl }),
       ...(description !== undefined && { description }),
       ...(longDescription !== undefined && { longDescription }),
       ...(locationText !== undefined && { locationText }),
@@ -437,48 +422,38 @@ const updateProject = async (req, res) => {
       };
     }
 
-    if (beforeAfters && Array.isArray(beforeAfters)) {
-      dataToUpdate.beforeAfters = {
+    if (beforeImages || afterImages || videos) {
+      const mediaToCreate = [
+        ...(Array.isArray(beforeImages) ? beforeImages.map(url => ({ url, type: 'BEFORE' })) : []),
+        ...(Array.isArray(afterImages) ? afterImages.map(url => ({ url, type: 'AFTER' })) : []),
+        ...(Array.isArray(videos) ? videos.map(url => ({ url, type: 'VIDEO' })) : [])
+      ];
+      dataToUpdate.media = {
         deleteMany: {},
-        create: beforeAfters.map(ba => ({
-          beforeUrl: ba.beforeUrl || ba.beforeImage,
-          afterUrl: ba.afterUrl || ba.afterImage,
-          sortOrder: ba.sortOrder || 0
-        }))
+        create: mediaToCreate
       };
     }
 
     const updatedProject = await prisma.project.update({
       where: { id },
       data: dataToUpdate,
-      include: { features: true, beforeAfters: true, service: true }
+      include: { features: true, media: true, service: true }
     });
 
-    res.status(200).json({ status: 200, data: updatedProject });
+    res.status(200).json({ status: 200, data: formatProjectData(updatedProject) });
   } catch (error) {
     res.status(500).json({ status: 500, message: error.message });
   }
 };
 
-// 5. حذف مشروع
 const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
-
-    await prisma.project.delete({
-      where: { id: id }
-    });
-
+    await prisma.project.delete({ where: { id } });
     res.status(200).json({ status: 200, message: 'Project deleted successfully' });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
   }
 };
 
-module.exports = {
-  getProjects,
-  getProjectById,
-  createProject,
-  updateProject,
-  deleteProject
-};
+module.exports = { getProjects, getProjectById, createProject, updateProject, deleteProject };
